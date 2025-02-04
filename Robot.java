@@ -39,12 +39,11 @@ public class Robot extends TimedRobot {
   //shooter
   static SparkMax shooterMotor1 = new SparkMax(5, MotorType.kBrushless);
    static SparkMax shooterMotor2 = new SparkMax(6, MotorType.kBrushless);
-  
+  Robot shoot = new Robot();
     public static void shoot(Joystick driverstick) {
       if (driverstick.getTriggerPressed()) {
       shooterMotor1.set(.25);
       shooterMotor2.set(-.25);
-
     }
   }
 
