@@ -3,22 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj.motorcontrol.Victor;
-import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
-
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import com.pathplanner.lib.PathPlanner;
+
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
  * the TimedRobot documentation. If you change the name of this class or the package after creating
@@ -38,42 +32,22 @@ public class Robot extends TimedRobot {
 
   //shooter
   static SparkMax shooterMotor1 = new SparkMax(5, MotorType.kBrushless);
-   static SparkMax shooterMotor2 = new SparkMax(6, MotorType.kBrushless);
-  Robot shoot = new Robot();
-    public static void shoot(Joystick driverstick) {
-      if (driverstick.getTriggerPressed()) {
-      shooterMotor1.set(.25);
-      shooterMotor2.set(-.25);
-    }
-  }
-
-
-/**
- * Initializes a Victor motor controller on PWM port 0.
- * This motor controller is named redlineTalon1.
- */
-
-
-/*public void setSparkMax(Spark leftShootSpark1) {
-   leftShootMax1 = rightShootMax1;*/
-
-
-
-
-
-
-//arm
-//Commented out for coding later on
-/*yourActuator = new Servo(RobotMap.YOUR_ACTUATOR_CHANNEL);
-yourActuator.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
-yourActuator.setSpeed(1.0); // to open
-yourActuator.setSpeed(-1.0); // to close
-
-
-wrist
- 
+  static SparkMax shooterMotor2 = new SparkMax(6, MotorType.kBrushless);
 
  
+  //arm
+Talon redline1 = new Talon(0);
+Talon redline2 = new Talon(1);
+DigitalInput toplimitSwitch = new DigitalInput(0);
+DigitalInput bottomlimitSwitch = new DigitalInput(1);
+//wrist
+linearservo servo = new linearservo();
+@Override
+public void robotPeriodic() {
+    //SmartDashboard.putNumber("Power", shootPower);
+    SmartDashboard.putBoolean("High Limit", toplimitSwitch.get());
+    SmartDashboard.putBoolean("Low Limit", bottomlimitSwitch.get());
+}
 
 
 /**
@@ -81,25 +55,67 @@ wrist
    * initialization code.
    */
 
-  @Override
-  public void robotPeriodic() {}
+  
 
   @Override
   public void autonomousInit() {}
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {} 
 
   @Override
   public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {
+  public void teleopPeriodic(){
     drive.arcadeDrive(driverstick.getX(), driverstick.getY());
-   
-  }
+    double articulatePower = 0.0;
+        articulate(articulatePower);
+                    
+                         if (opstick.getRawButtonPressed(2)) {
+                          shooterMotor1.set(.25);
+                         shooterMotor2.set(.25);
+                        }
+                      if (opstick.getRawButtonReleased(2)){
+                      shooterMotor1.set(0);
+                      shooterMotor2.set(0);
+                    }
+                      if (opstick.getRawButtonPressed(1)){
+                     shooterMotor1.set(.25);
+                     shooterMotor2.set(.25);
+                    }
+                        if (opstick.getRawButtonReleased(1)){
+                          shooterMotor1.set(0);
+                          shooterMotor2.set(0);
+                        }
+                      }
+                   public void articulate(double speed) {
+                    if (opstick.getRawButton(7)) {
+                      toplimitSwitch.get();
+                      redline1.set(.25);
+                      redline2.set(.25);
+                    } else {
+                      toplimitSwitch.close();
+                      redline1.set(0);
+                      redline2.set(0);
+                    }
+                    if (opstick.getRawButton(9)) {
+                      bottomlimitSwitch.get();
+                      redline1.set(-.25);
+                      redline2.set(-.25);
+                    } else {
+                    bottomlimitSwitch.close();
+                      redline1.set(0);
+                      redline2.set(0);
+                    }
+                    }
+                   
 
-  @Override
+                    
+                
+              
+      
+   @Override
   public void disabledInit() {}
 
   @Override
@@ -116,4 +132,6 @@ wrist
 
   @Override
   public void simulationPeriodic() {}
+
+
 }
